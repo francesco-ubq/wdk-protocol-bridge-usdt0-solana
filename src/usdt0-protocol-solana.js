@@ -410,7 +410,9 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
       throw new Error('Cannot quote from an unfunded account: fund it with SOL first.')
     }
 
-    const oftError = OFT_ERRORS[Number(value.err?.InstructionError?.[1]?.Custom)]
+    const failedProgram = value.logs?.map((log) => log.match(/^Program (\w+) failed: /)?.[1]).find(Boolean)
+
+    const oftError = failedProgram === programAddress ? OFT_ERRORS[Number(value.err?.InstructionError?.[1]?.Custom)] : undefined
 
     if (oftError) {
       const { ErrorClass, message } = oftError

@@ -221,7 +221,18 @@ describe('_quoteOftSend', () => {
 
   test('reports an oft program error a caller cannot fix as a plain error', async () => {
     result.err = { InstructionError: [1n, { Custom: 6000n }] }
+    result.logs = [`Program ${DEPLOYMENT.programId} failed: custom program error: 0x1770`]
     await expect(quote()).rejects.toStrictEqual(new Error('The signer is not authorized to perform this operation.'))
+  })
+
+  test('reports a layerzero program error that shares an oft error number as a simulation failure', async () => {
+    const executorProgram = FIXTURE.accounts[EXECUTOR_CONFIG].owner
+    result.err = { InstructionError: [1n, { Custom: 6005n }] }
+    result.logs = [
+      `Program ${executorProgram} failed: custom program error: 0x1775`,
+      `Program ${DEPLOYMENT.programId} failed: custom program error: 0x1775`
+    ]
+    await expect(quote()).rejects.toThrow(`OFT quote simulation failed: {"InstructionError":["1",{"Custom":"6005"}]}. Program ${executorProgram} failed`)
   })
 
   test('reports an unfunded payer clearly', async () => {
