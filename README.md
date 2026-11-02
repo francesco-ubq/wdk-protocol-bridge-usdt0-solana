@@ -29,14 +29,14 @@ const usdt0Bridge = account.getBridgeProtocol('usdt0')
 const quote = await usdt0Bridge.quoteBridge({
   targetChain: 'arbitrum',
   recipient: '0x...',
-  token: 'USDT0_SPL_MINT_ADDRESS',
-  amount: 1_000_000n // 1 USDT0 (6 decimals)
+  token: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // native SPL USDT
+  amount: 1_000_000n // 1 USDT (6 decimals)
 })
 
 const { hash, fee, bridgeFee } = await usdt0Bridge.bridge({
   targetChain: 'arbitrum',
   recipient: '0x...',
-  token: 'USDT0_SPL_MINT_ADDRESS',
+  token: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
   amount: 1_000_000n
 })
 ```
@@ -54,14 +54,14 @@ const { hash, fee, bridgeFee } = await usdt0Bridge.bridge(options, {
 })
 ```
 
-The Kora node must allow the paymaster to front the LayerZero fee: margin pricing, so the fee it pays is charged back, and `fee_payer_policy.system.allow_transfer = true`, since the ULN pays its workers from the fee payer. The OFT, endpoint, ULN, executor and DVN programs must also be allowed.
+The Kora node must allow the paymaster to front the LayerZero fee: margin pricing, so the fee it pays is charged back, and `fee_payer_policy.system.allow_transfer = true`, since the ULN pays its workers from the fee payer. The OFT, endpoint, ULN, executor and DVN programs must also be allowed, and `max_allowed_lamports` must be above the LayerZero fee, which follows the destination's gas prices.
 
 ## 📚 API
 
 ### `new Usdt0ProtocolSolana(account, config?)`
 
 - `account`: a `WalletAccountSolana` or `WalletAccountSolanaGasless` (or their read-only counterparts for quotes only).
-- `config.bridgeMaxFee`: optional upper bound on `fee + bridgeFee`, in lamports. Gasless accounts ignore it.
+- `config.bridgeMaxFee`: optional upper bound on `fee + bridgeFee`, in lamports. For a gasless account it caps `bridgeFee` alone, the LayerZero fee the paymaster pays upfront; the paymaster's fee is capped by `transactionMaxFee`.
 
 ### Methods
 
@@ -72,7 +72,7 @@ The Kora node must allow the paymaster to front the LayerZero fee: margin pricin
 | `getSupportedChains()` | Lists the supported chains. |
 | `getSupportedTokens(options?)` | Lists the supported tokens, optionally scoped by `fromChain`, `toChain` or `fromToken`. |
 
-`options` is `{ targetChain, recipient, token, amount }`, where `token` is the SPL mint address. `config` overrides a gasless account's paymaster options (`paymasterToken`, `transactionMaxFee`); for `bridge` it can also override `bridgeMaxFee`.
+`options` is `{ targetChain, recipient, token, amount }`, where `token` is the native SPL USDT mint, the only one the Legacy Mesh deployment accepts. For `bridge`, `config` can override `bridgeMaxFee` and, on a gasless account, `paymasterToken` and `transactionMaxFee`; for `quoteBridge`, it can override a gasless account's `paymasterToken`.
 
 ## 🛠️ Development
 
@@ -85,7 +85,7 @@ npm run build:types
 
 `SOLANA_OFT_DEPLOYMENTS` in `src/config.js` contains the mainnet Legacy Mesh OFT program, OFT store, and native SPL USDT mint.
 
-Quotes and sends are built with the `@solana/*` v3 packages, not `@layerzerolabs/lz-solana-sdk-v2`, which does not load on Bare. `_getEndpointAccounts` ports the ULN path of its `SendHelper.getQuoteAccounts` and `getSendAccounts`, and `src/layerzero.js` holds the account layouts. A send loads its accounts through the OFT store's address lookup table.
+Quotes and sends are built with the `@solana/*` v3 packages, not `@layerzerolabs/lz-solana-sdk-v2`, which does not load on Bare. `_getQuoteEndpointAccounts` and `_getSendEndpointAccounts` port the ULN path of its `SendHelper.getQuoteAccounts` and `getSendAccounts`, from the accounts `_getEndpointRoute` resolves once per route, and `src/layerzero.js` holds the account layouts. Quotes and sends load their accounts through the OFT store's address lookup table.
 
 ## 📜 License
 
