@@ -68,7 +68,7 @@ The Kora node must allow the paymaster to front the LayerZero fee: margin pricin
 | Method | Description |
 | --- | --- |
 | `bridge(options, config?)` | Sends the bridge transaction. Returns `{ hash, fee, bridgeFee }`. |
-| `quoteBridge(options, config?)` | Quotes the bridge. Returns `{ fee, bridgeFee }`. |
+| `quoteBridge(options, config?)` | Quotes the bridge. Returns `{ fee, bridgeFee, oftFee, amountReceived }`. |
 | `getSupportedChains()` | Lists the supported chains. |
 | `getSupportedTokens(options?)` | Lists the supported tokens, optionally scoped by `fromChain`, `toChain` or `fromToken`. |
 
@@ -90,3 +90,5 @@ Quotes and sends are built with the `@solana/*` v3 packages, not `@layerzerolabs
 ## 📜 License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
+`quoteBridge` returns `oftFee` and `amountReceived` in bridged-token base units. The OFT fee is deducted from the transfer amount using the on-chain store’s `feeBps` and integer rounding; `amountReceived` is the net amount used by the send instruction. Keep this deducted fee separate from `bridgeFee` (LayerZero messaging) and `fee` (transaction/paymaster costs).

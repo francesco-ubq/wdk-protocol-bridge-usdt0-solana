@@ -212,7 +212,7 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
    * @param {BridgeOptions} options - The bridge's options.
    * @param {Pick<PaymasterConfigOverrides, 'paymasterToken'>} [config] - If the protocol has been
    *   initialized with a gasless wallet account, it can be used to override its paymaster token.
-   * @returns {Promise<Omit<BridgeResult, 'hash'>>} The bridge's quotes.
+   * @returns {Promise<Omit<BridgeResult, 'hash'> & { oftFee: bigint, amountReceived: bigint }>} The costs and net received amount; oftFee and amountReceived are in the bridged token's base units.
    * @throws {ProviderRequiredError} If the wallet is not connected to a provider.
    * @throws {ValueError} If the target chain, token, amount or recipient is not valid, or the oft program rejects the
    *   amount or the target chain.
@@ -222,11 +222,11 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
       throw new ProviderRequiredError('The wallet must be connected to a provider in order to quote bridge operations.')
     }
 
-    const { tx, bridgeFee } = await this._getBridgeTransaction(options)
+    const { tx, bridgeFee, oftFee, amountReceived } = await this._getBridgeTransaction(options)
 
     const { fee } = await this._account.quoteSendTransaction(tx, config)
 
-    return { fee, bridgeFee }
+    return { fee, bridgeFee, oftFee, amountReceived }
   }
 
   /**
@@ -379,7 +379,7 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
 
     const tx = appendTransactionMessageInstructions(instructions, createTransactionMessage({ version: 0 }))
 
-    return { tx, bridgeFee }
+    return { tx, bridgeFee, oftFee, amountReceived: sendParam.minAmountLD }
   }
 
   /** @private */
