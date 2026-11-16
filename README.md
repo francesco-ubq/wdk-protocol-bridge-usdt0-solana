@@ -65,14 +65,30 @@ The Kora node must allow the paymaster to front the LayerZero fee: margin pricin
 
 ### Methods
 
-| Method | Description |
-| --- | --- |
-| `bridge(options, config?)` | Sends the bridge transaction. Returns `{ hash, fee, bridgeFee }`. |
-| `quoteBridge(options, config?)` | Quotes the bridge. Returns `{ fee, bridgeFee, oftFee, amountReceived }`. |
-| `getSupportedChains()` | Lists the supported chains. |
-| `getSupportedTokens(options?)` | Lists the supported tokens, optionally scoped by `fromChain`, `toChain` or `fromToken`. |
+| Method | Description | Returns |
+| --- | --- | --- |
+| `bridge(options, config?)` | Sends the bridge transaction | `Promise<Usdt0BridgeResult>` |
+| `quoteBridge(options, config?)` | Quotes the bridge | `Promise<Omit<Usdt0BridgeResult, 'hash'>>` |
+| `getSupportedChains()` | Lists the supported chains | `Promise<SwidgeSupportedChain[]>` |
+| `getSupportedTokens(options?)` | Lists the supported tokens, optionally scoped by `fromChain`, `toChain` or `fromToken` | `Promise<SwidgeSupportedToken[]>` |
 
 `options` is `{ targetChain, recipient, token, amount }`, where `token` is the native SPL USDT mint, the only one the Legacy Mesh deployment accepts. For `bridge`, `config` can override `bridgeMaxFee` and, on a gasless account, `paymasterToken` and `transactionMaxFee`; for `quoteBridge`, it can override a gasless account's `paymasterToken`.
+
+Both methods use the exported `Usdt0BridgeResult` type: `bridge()` returns the
+full result and `quoteBridge()` omits only `hash`. Values are calculated for each
+operation; a later send can have different fees from an earlier quote.
+
+| Field | Units | Treatment |
+| --- | --- | --- |
+| `fee` | Lamports for standard accounts; paymaster-token base units for gasless accounts | Separate transaction charge; Kora also includes its fronted LayerZero cost here |
+| `bridgeFee` | Native lamports | LayerZero messaging cost; do not add it again to a gasless account's `fee` |
+| `oftFee` | Bridged-token base units | Deducted from `amount` using the on-chain store's `feeBps` and integer rounding |
+| `amountReceived` | Bridged-token base units | `amount - oftFee`, as used by the send instruction's `minAmountLD`; not a destination receipt |
+
+Keep the original transfer `amount` when sending. `amountReceived` is already
+net of `oftFee`, so do not subtract it again. The EVM SDK follows the same
+result-type and method convention, but its ERC-4337 `tokenFee` is a helper
+surcharge added to the bridge principal, rather than an OFT deduction.
 
 ## 🛠️ Development
 
@@ -90,5 +106,3 @@ Quotes and sends are built with the `@solana/*` v3 packages, not `@layerzerolabs
 ## 📜 License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
-
-`quoteBridge` returns `oftFee` and `amountReceived` in bridged-token base units. The OFT fee is deducted from the transfer amount using the on-chain store’s `feeBps` and integer rounding; `amountReceived` is the net amount used by the send instruction. Keep this deducted fee separate from `bridgeFee` (LayerZero messaging) and `fee` (transaction/paymaster costs).

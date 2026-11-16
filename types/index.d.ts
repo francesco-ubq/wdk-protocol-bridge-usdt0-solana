@@ -2,6 +2,7 @@ export { default } from "./src/usdt0-protocol-solana.js";
 export type BridgeProtocolConfig = import("@tetherto/wdk-wallet/protocols").BridgeProtocolConfig;
 export type BridgeResult = import("@tetherto/wdk-wallet/protocols").BridgeResult;
 export type BridgeOptions = import("./src/usdt0-protocol-solana.js").BridgeOptions;
+export type Usdt0BridgeResult = import("./src/usdt0-protocol-solana.js").Usdt0BridgeResult;
 export type PaymasterConfigOverrides = import("./src/usdt0-protocol-solana.js").PaymasterConfigOverrides;
 export type SwidgeSupportedChain = import("./src/usdt0-protocol-solana.js").SwidgeSupportedChain;
 export type SwidgeSupportedToken = import("./src/usdt0-protocol-solana.js").SwidgeSupportedToken;
