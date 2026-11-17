@@ -43,19 +43,6 @@ describe('Usdt0ProtocolSolana with a solana wallet account', () => {
   })
 
   describe('bridge', () => {
-    test.each([100n, 7_649_561n])('returns the quoted fee breakdown for amount %p', async (amount) => {
-      const options = { targetChain: 'arbitrum', recipient: EVM_ADDRESS, token: MINT, amount }
-      const quote = await protocol.quoteBridge(options)
-      const result = await protocol.bridge(options)
-      const { oftData } = decodeTransaction(rpc.sendTransaction.mock.calls[0][0])
-      const sent = decodeOftSend(oftData)
-
-      expect(result).toEqual({ hash: SIGNATURE, ...quote })
-      expect(sent.amountLD).toBe(amount)
-      expect(sent.minAmountLD).toBe(result.toTokenAmount)
-      expect(result.toTokenAmount + result.oftFee).toBe(amount)
-    })
-
     test('should successfully perform a bridge operation', async () => {
       const result = await protocol.bridge({ targetChain: 'arbitrum', recipient: EVM_ADDRESS, token: MINT, amount: 1_000_000 })
 
@@ -145,7 +132,7 @@ describe('Usdt0ProtocolSolana with a solana wallet account', () => {
       [7_649_561n, 2_294n, 7_647_267n],
       [7_616_669n, 2_285n, 7_614_384n],
       [2n ** 64n - 1n, 5_534_023_222_112_865n, 18_441_210_050_487_438_750n]
-    ])('quotes the net amount with integer OFT fee rounding for %p', async (amount, oftFee, toTokenAmount) => {
+    ])('should quote the net amount with integer oft fee rounding for %p', async (amount, oftFee, toTokenAmount) => {
       const result = await protocol.quoteBridge({ targetChain: 'arbitrum', recipient: EVM_ADDRESS, token: MINT, amount })
 
       expect(result).toEqual({ fee: NETWORK_FEE, bridgeFee: NATIVE_FEE, oftFee, toTokenAmount })

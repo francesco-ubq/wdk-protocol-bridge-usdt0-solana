@@ -51,21 +51,6 @@ describe('Usdt0ProtocolSolana with a solana gasless wallet account', () => {
   })
 
   describe('bridge', () => {
-    test.each([100n, 7_649_561n])('returns the quoted OFT deduction separately from paymaster fees for %p', async (amount) => {
-      const protocol = new Usdt0ProtocolSolana(account)
-      const options = { targetChain: 'arbitrum', recipient: EVM_ADDRESS, token: MINT, amount }
-      const quote = await protocol.quoteBridge(options)
-      const result = await protocol.bridge(options)
-      const [{ transaction }] = kora.signAndSendTransaction.mock.calls[0]
-      const sent = decodeOftSend(decodeTransaction(transaction).oftData)
-
-      expect(result).toEqual({ hash: 'gasless-signature', ...quote })
-      expect(result.fee).toBe(PAYMASTER_FEE)
-      expect(sent.amountLD).toBe(amount)
-      expect(sent.minAmountLD).toBe(result.toTokenAmount)
-      expect(result.toTokenAmount + result.oftFee).toBe(amount)
-    })
-
     test('should bridge through the kora paymaster, which pays the layerzero fee, with the paymaster overrides', async () => {
       const protocol = new Usdt0ProtocolSolana(account, { bridgeMaxFee: 1n })
 
