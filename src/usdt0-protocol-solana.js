@@ -68,7 +68,7 @@ import {
 
 /** @typedef {import('@tetherto/wdk-wallet/protocols').BridgeProtocolConfig} BridgeProtocolConfig */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').BridgeResult} BridgeResult */
-/** @typedef {BridgeResult & { oftFee: bigint, amountReceived: bigint }} Usdt0BridgeResult OFT deduction and net instruction amount in bridged-token base units. */
+/** @typedef {BridgeResult & { oftFee: bigint, toTokenAmount: bigint }} Usdt0BridgeResult OFT deduction and net instruction amount in bridged-token base units. */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').SwidgeSupportedChain} SwidgeSupportedChain */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').SwidgeSupportedToken} SwidgeSupportedToken */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').SwidgeSupportedTokensOptions} SwidgeSupportedTokensOptions */
@@ -184,7 +184,7 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
 
     const { bridgeMaxFee = this._config.bridgeMaxFee, ...accountConfig } = config ?? {}
 
-    const { tx, bridgeFee, oftFee, amountReceived } = await this._getBridgeTransaction(options)
+    const { tx, bridgeFee, oftFee, toTokenAmount } = await this._getBridgeTransaction(options)
 
     if (this._getPaymasterAddress()) {
       if (bridgeMaxFee !== undefined && bridgeFee > bridgeMaxFee) {
@@ -193,7 +193,7 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
 
       const { hash, fee } = await this._account.sendTransaction(tx, accountConfig)
 
-      return { hash, fee, bridgeFee, oftFee, amountReceived }
+      return { hash, fee, bridgeFee, oftFee, toTokenAmount }
     }
 
     const { fee } = await this._account.quoteSendTransaction(tx)
@@ -204,7 +204,7 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
 
     const { hash } = await this._account.sendTransaction(tx)
 
-    return { hash, fee, bridgeFee, oftFee, amountReceived }
+    return { hash, fee, bridgeFee, oftFee, toTokenAmount }
   }
 
   /**
@@ -223,11 +223,11 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
       throw new ProviderRequiredError('The wallet must be connected to a provider in order to quote bridge operations.')
     }
 
-    const { tx, bridgeFee, oftFee, amountReceived } = await this._getBridgeTransaction(options)
+    const { tx, bridgeFee, oftFee, toTokenAmount } = await this._getBridgeTransaction(options)
 
     const { fee } = await this._account.quoteSendTransaction(tx, config)
 
-    return { fee, bridgeFee, oftFee, amountReceived }
+    return { fee, bridgeFee, oftFee, toTokenAmount }
   }
 
   /**
@@ -380,7 +380,7 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
 
     const tx = appendTransactionMessageInstructions(instructions, createTransactionMessage({ version: 0 }))
 
-    return { tx, bridgeFee, oftFee, amountReceived: sendParam.minAmountLD }
+    return { tx, bridgeFee, oftFee, toTokenAmount: sendParam.minAmountLD }
   }
 
   /** @private */

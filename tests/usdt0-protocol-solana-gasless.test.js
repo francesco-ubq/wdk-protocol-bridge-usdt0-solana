@@ -62,8 +62,8 @@ describe('Usdt0ProtocolSolana with a solana gasless wallet account', () => {
       expect(result).toEqual({ hash: 'gasless-signature', ...quote })
       expect(result.fee).toBe(PAYMASTER_FEE)
       expect(sent.amountLD).toBe(amount)
-      expect(sent.minAmountLD).toBe(result.amountReceived)
-      expect(result.amountReceived + result.oftFee).toBe(amount)
+      expect(sent.minAmountLD).toBe(result.toTokenAmount)
+      expect(result.toTokenAmount + result.oftFee).toBe(amount)
     })
 
     test('should bridge through the kora paymaster, which pays the layerzero fee, with the paymaster overrides', async () => {
@@ -72,7 +72,7 @@ describe('Usdt0ProtocolSolana with a solana gasless wallet account', () => {
       const result = await protocol.bridge({ targetChain: 'arbitrum', recipient: EVM_ADDRESS, token: MINT, amount: 1_000_000 },
         { paymasterToken: { address: USDC_MINT }, transactionMaxFee: PAYMASTER_FEE, bridgeMaxFee: NATIVE_FEE })
 
-      expect(result).toEqual({ hash: 'gasless-signature', fee: PAYMASTER_FEE, bridgeFee: NATIVE_FEE, oftFee: 300n, amountReceived: 999_700n })
+      expect(result).toEqual({ hash: 'gasless-signature', fee: PAYMASTER_FEE, bridgeFee: NATIVE_FEE, oftFee: 300n, toTokenAmount: 999_700n })
       expect(simulatedFeePayer(rpc)).toBe(PAYMASTER)
 
       expect(kora.getPaymentInstruction).toHaveBeenCalledTimes(1)
@@ -129,7 +129,7 @@ describe('Usdt0ProtocolSolana with a solana gasless wallet account', () => {
       const protocol = new Usdt0ProtocolSolana(new WalletAccountReadOnlySolanaGasless(sender, createConfig()))
 
       expect(await protocol.quoteBridge({ targetChain: 'arbitrum', recipient: EVM_ADDRESS, token: MINT, amount: 7_649_561n }, { paymasterToken: { address: USDC_MINT } }))
-        .toEqual({ fee: PAYMASTER_FEE, bridgeFee: NATIVE_FEE, oftFee: 2_294n, amountReceived: 7_647_267n })
+        .toEqual({ fee: PAYMASTER_FEE, bridgeFee: NATIVE_FEE, oftFee: 2_294n, toTokenAmount: 7_647_267n })
       expect(simulatedFeePayer(rpc)).toBe(PAYMASTER)
 
       const [{ transaction, fee_token: feeToken }] = kora.getPaymentInstruction.mock.calls[0]

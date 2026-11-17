@@ -83,9 +83,9 @@ operation; a later send can have different fees from an earlier quote.
 | `fee` | Lamports for standard accounts; paymaster-token base units for gasless accounts | Separate transaction charge; Kora also includes its fronted LayerZero cost here |
 | `bridgeFee` | Native lamports | LayerZero messaging cost; do not add it again to a gasless account's `fee` |
 | `oftFee` | Bridged-token base units | Deducted from `amount` using the on-chain store's `feeBps` and integer rounding |
-| `amountReceived` | Bridged-token base units | `amount - oftFee`, as used by the send instruction's `minAmountLD`; not a destination receipt |
+| `toTokenAmount` | Bridged-token base units | `amount - oftFee`, as used by the send instruction's `minAmountLD`; not a destination receipt |
 
-Keep the original transfer `amount` when sending. `amountReceived` is already
+Keep the original transfer `amount` when sending. `toTokenAmount` is already
 net of `oftFee`, so do not subtract it again. The EVM SDK follows the same
 result-type and method convention, but its ERC-4337 `tokenFee` is a helper
 surcharge added to the bridge principal, rather than an OFT deduction.

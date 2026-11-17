@@ -77,7 +77,7 @@ export type BridgeResult = import("@tetherto/wdk-wallet/protocols").BridgeResult
  */
 export type Usdt0BridgeResult = BridgeResult & {
     oftFee: bigint;
-    amountReceived: bigint;
+    toTokenAmount: bigint;
 };
 export type SwidgeSupportedChain = import("@tetherto/wdk-wallet/protocols").SwidgeSupportedChain;
 export type SwidgeSupportedToken = import("@tetherto/wdk-wallet/protocols").SwidgeSupportedToken;
