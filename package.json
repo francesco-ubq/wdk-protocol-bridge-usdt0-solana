@@ -1,6 +1,6 @@
 {
   "name": "@tetherto/wdk-protocol-bridge-usdt0-solana",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "USD₮0 bridge module for WDK (Wallet Development Kit) by Tether, for cross-chain transfers from Solana wallet accounts.",
   "keywords": [
     "wdk",
