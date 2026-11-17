@@ -22,6 +22,8 @@
 
 /** @typedef {import('./src/usdt0-protocol-solana.js').Usdt0BridgeResult} Usdt0BridgeResult */
 
+/** @typedef {import('./src/usdt0-protocol-solana.js').Usdt0BridgeResultExtras} Usdt0BridgeResultExtras */
+
 /** @typedef {import('./src/usdt0-protocol-solana.js').PaymasterConfigOverrides} PaymasterConfigOverrides */
 
 /** @typedef {import('./src/usdt0-protocol-solana.js').SwidgeSupportedChain} SwidgeSupportedChain */

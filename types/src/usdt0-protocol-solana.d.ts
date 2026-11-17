@@ -73,12 +73,22 @@ export default class Usdt0ProtocolSolana extends BridgeProtocol {
 export type BridgeProtocolConfig = import("@tetherto/wdk-wallet/protocols").BridgeProtocolConfig;
 export type BridgeResult = import("@tetherto/wdk-wallet/protocols").BridgeResult;
 /**
- * OFT deduction and net instruction amount in bridged-token base units.
+ * The usdt0-specific fields of a bridge's result, on top of the WDK {@link BridgeResult}.
  */
-export type Usdt0BridgeResult = BridgeResult & {
+export type Usdt0BridgeResultExtras = {
+    /**
+     * - The fee the oft program deducts from the amount, in the token's base units.
+     */
     oftFee: bigint;
+    /**
+     * - The amount the recipient receives after the oft fee, in the token's base units.
+     */
     toTokenAmount: bigint;
 };
+/**
+ * The full result of {@link Usdt0ProtocolSolana#bridge}.
+ */
+export type Usdt0BridgeResult = BridgeResult & Usdt0BridgeResultExtras;
 export type SwidgeSupportedChain = import("@tetherto/wdk-wallet/protocols").SwidgeSupportedChain;
 export type SwidgeSupportedToken = import("@tetherto/wdk-wallet/protocols").SwidgeSupportedToken;
 export type SwidgeSupportedTokensOptions = import("@tetherto/wdk-wallet/protocols").SwidgeSupportedTokensOptions;

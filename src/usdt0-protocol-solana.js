@@ -68,7 +68,21 @@ import {
 
 /** @typedef {import('@tetherto/wdk-wallet/protocols').BridgeProtocolConfig} BridgeProtocolConfig */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').BridgeResult} BridgeResult */
-/** @typedef {BridgeResult & { oftFee: bigint, toTokenAmount: bigint }} Usdt0BridgeResult OFT deduction and net instruction amount in bridged-token base units. */
+
+/**
+ * The usdt0-specific fields of a bridge's result, on top of the WDK {@link BridgeResult}.
+ *
+ * @typedef {Object} Usdt0BridgeResultExtras
+ * @property {bigint} oftFee - The fee the oft program deducts from the amount, in the token's base units.
+ * @property {bigint} toTokenAmount - The amount the recipient receives after the oft fee, in the token's base units.
+ */
+
+/**
+ * The full result of {@link Usdt0ProtocolSolana#bridge}.
+ *
+ * @typedef {BridgeResult & Usdt0BridgeResultExtras} Usdt0BridgeResult
+ */
+
 /** @typedef {import('@tetherto/wdk-wallet/protocols').SwidgeSupportedChain} SwidgeSupportedChain */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').SwidgeSupportedToken} SwidgeSupportedToken */
 /** @typedef {import('@tetherto/wdk-wallet/protocols').SwidgeSupportedTokensOptions} SwidgeSupportedTokensOptions */
