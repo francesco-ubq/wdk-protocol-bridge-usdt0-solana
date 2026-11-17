@@ -104,7 +104,7 @@ const SEND_COMPUTE_UNIT_LIMIT = 400_000
 const U64_MAX = 0xffffffffffffffffn
 
 /**
- * @typedef {object} BridgeOptions
+ * @typedef {Object} BridgeOptions
  * @property {string} targetChain - The identifier of the destination blockchain (e.g., "arbitrum").
  * @property {string} recipient - The address of the recipient.
  * @property {string} token - The spl mint address of the token to bridge.
@@ -112,7 +112,7 @@ const U64_MAX = 0xffffffffffffffffn
  */
 
 /**
- * @typedef {object} OftSendParam
+ * @typedef {Object} OftSendParam
  * @property {number} dstEid - The LayerZero destination endpoint id.
  * @property {ReadonlyUint8Array} to - The recipient address, encoded as 32 bytes.
  * @property {bigint} amountLD - The amount to send, in local decimals.
