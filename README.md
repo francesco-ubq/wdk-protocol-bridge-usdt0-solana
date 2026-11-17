@@ -86,9 +86,7 @@ operation; a later send can have different fees from an earlier quote.
 | `toTokenAmount` | Bridged-token base units | `amount - oftFee`, as used by the send instruction's `minAmountLD`; not a destination receipt |
 
 Keep the original transfer `amount` when sending. `toTokenAmount` is already
-net of `oftFee`, so do not subtract it again. The EVM SDK follows the same
-result-type and method convention, but its ERC-4337 `tokenFee` is a helper
-surcharge added to the bridge principal, rather than an OFT deduction.
+net of `oftFee`, so do not subtract it again.
 
 ## 🛠️ Development
 
